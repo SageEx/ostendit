@@ -1,0 +1,11 @@
+It is advised that all strictly abide by the following conventions while writing any type of code:
+Coding conventions for python:
+	http://docs.python-guide.org/en/latest/writing/style/
+	More info at:
+	https://www.python.org/dev/peps/pep-0008/
+Coding conventions for javascript:
+	https://make.wordpress.org/core/handbook/coding-standards/javascript/
+	https://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml#Parentheses
+Both for backend and frontend, debuggers need to be discussed
+Backend should suggest a code checker tool, if possible
+For frontend, JSHint can be used
