@@ -1,0 +1,283 @@
+<html>
+	<head>
+  <script src='d3.min.js'></script>
+	<script src="graph.js"></script>
+	<script src="animation.js"></script>
+		<meta charset='utf-8'>
+    <title>Force Layout Example 1</title>
+    <style>
+
+		.node {
+		    fill: #ccc;
+		    stroke: #fff;
+		    stroke-width: 2px;
+		}
+
+		.link {
+		    stroke: #777;
+		    stroke-width: 2px;
+		}
+
+    </style>
+	</head>
+	<body>
+    <button onclick="doBFS();">Start Dijkstra</button>
+    <script>
+var color = ["blue","red","black"];
+			var graph = {
+  "nodes":[
+    {"name":"23","group":1,"visited": 0,"adj":[],"color":"blue","d":1000},
+    {"name":"42","group":2,"visited": 0,"adj":[],"color":"blue","d":1000},
+    {"name":"11","group":1,"visited": 0,"adj":[],"color":"blue","d":1000},
+    {"name":"21","group":3,"visited": 0,"adj":[],"color":"blue","d":1000},
+    {"name":"10","group":4,"visited": 0,"adj":[],"color":"blue","d":1000},
+    {"name":"8","group":4,"visited": 0,"adj":[],"color":"blue","d":1000},
+    {"name":"33","group":4,"visited": 0,"adj":[],"color":"blue","d":1000},
+    {"name":"44","group":4,"visited": 0,"adj":[],"color":"blue","d":1000},
+  ],
+  "links":[
+    {"source":0,"target":1,"color":"blue","w":3},
+    {"source":1,"target":2,"color":"blue","w":5},
+    {"source":2,"target":3,"color":"blue","w":2},
+    {"source":3,"target":5,"color":"blue","w":7},
+    {"source":5,"target":4,"color":"blue","w":8},
+    {"source":4,"target":7,"color":"blue","w":3},
+    {"source":5,"target":6,"color":"blue","w":9},
+    {"source":6,"target":7,"color":"blue","w":11},
+  ]
+};
+			var g = new G.Graph(graph.nodes,graph.links,1);
+			//g.generateAdjacency();
+			var S = [];
+			var W = [];
+			function init(G){
+				for(var i in g.nodes){
+					var node=g.nodes[i];
+					node.d=1000;
+					node.color="blue";
+				}
+			}
+
+			function sort(G){
+				var nodes = G;
+				var l = nodes.length;
+				for(var i=0;i<l-1;i++){
+					var node = nodes[i];
+					var pos=i;var tmp=null;var min=node.d;
+					for(var j=i+1;j<l;j++){
+						var nodej=nodes[j];
+						if(min>nodej.d){
+							pos=j;
+							min=nodej.d;
+							//console.log(nodej.d+" "+node.d);
+						}
+					}
+					tmp = nodes[i];
+					nodes[i] = nodes[pos];
+					nodes[pos] = tmp;
+				}
+			}
+
+			function relax(u,v,w){
+				var former=v.d;
+				if(v.d>u.d+w){
+					v.d=u.d+w;
+					//console.log(w);
+					g.animation.anim.push([{"node":v,val:"d","src":former,"dest":v.d}]);
+				}
+			}
+
+			function dijkstra(G,s){
+				s.d=0;
+				g.animation.anim.push([{"node":s,val:"d","src":1000,"dest":0}]);
+				g.animation.anim.push([{"node":s,val:"color","src":color[0],"dest":color[1]}]);
+				Q=G.nodes.slice(0);//clone
+				//console.log(Q);
+				while(Q.length>0){
+					sort(Q);
+					var u=Q.shift();
+					//console.log(u);
+					S.push(u);
+					g.animation.anim.push([{"node":u,val:"color","src":color[0],"dest":color[1]}]);
+					//console.log(u.adj);
+					for(var v in u.adj){
+						var node=u.adj[v][0];
+						var w=u.adj[v][1];
+						//console.log(w);
+						relax(u,node,w);
+					}
+				}
+			}
+
+		var width = 840,
+		height = 580;
+		var svg = d3.select('body').append('svg')
+    .attr('width', width)
+    .attr('height', height);
+    	var force = d3.layout.force()
+    .size([width, height])
+    .linkDistance(300)
+    .charge(-350)
+    .nodes(g.nodes).links(g.edges)
+    .on("tick",tick);
+    /*var link = svg.selectAll('.link')
+    .data(g.edges)
+    .enter().append('line')
+    .attr('class', 'link');*/
+    svg.append("svg:defs").selectAll("marker")
+    .data(["end"])      // Different link/path types can be defined here
+  .enter().append("svg:marker")    // This section adds in the arrows
+    .attr("id", String)
+    .attr("viewBox", "0 -5 10 10")
+    .attr("refX", 28)
+    .attr("refY", 0)
+    .attr("markerWidth", 16)
+    .attr("markerHeight", 16)
+    .attr("orient", "auto")
+  .append("svg:path")
+    .attr("d", "M0,-5L10,0L0,5");
+
+		var link = svg.selectAll(".link")
+		.data(g.edges)
+		.enter()
+		.append('path')
+		.attr({'d': function(d) {return 'M '+d.source.x+' '+d.source.y+' L '+ d.target.x +' '+d.target.y},
+		       'class':'edgepath',
+		       'fill-opacity':1,
+		       'stroke-opacity':1,
+		       'fill':'blue',
+		       'stroke':'red',
+		       'marker-end': 'url(#end)',
+		       'id':function(d,i) {return 'edgepath'+i}});
+
+		var edgelabels = svg.selectAll(".link")
+        .data(g.edges)
+        .enter()
+        .append('text')
+        .style("pointer-events", "none")
+        .attr({'class':'edgelabel',
+               'id':function(d,i){return 'edgelabel'+i},
+               'dx':50,
+               'dy':0,
+               'font-size':18,
+               'fill':'red'});
+
+    edgelabels.append('textPath')
+        .attr('xlink:href',function(d,i) {return '#edgepath'+i})
+        .style("pointer-events", "none")
+        .text(function(d,i){return d.w});
+
+
+    var node = svg.selectAll('.node')
+    .data(g.nodes)
+    .enter().append('svg')
+    .attr('class','node');
+node.append("circle")
+    .attr("r", width/30)
+    .style("fill", function (d) {
+    return d.color;})
+    ;
+    	node.append("text")
+      .attr("dx", -3)
+      .attr("dy", ".35em")
+      .text(function(d) { return d.d })
+      .style("stroke", "orange");
+
+	function update(){
+		var node = svg.selectAll('.node')
+		.data(g.nodes);
+		var nodes = d3.selectAll("circle")
+		.style("fill", function(d) { return d.color; });
+		var text = d3.selectAll("text")
+		.text(function(d) { return d.d; });
+
+		var edgelabels = svg.selectAll(".link")
+        .data(g.edges)
+        .enter()
+        .append('text')
+        .style("pointer-events", "none")
+        .attr({'class':'edgelabel',
+               'id':function(d,i){return 'edgelabel'+i},
+               'dx':80,
+               'dy':0,
+               'font-size':15,
+               'fill':'#111'});
+
+    edgelabels.append('textPath')
+        .attr('xlink:href',function(d,i) {return '#edgepath'+i})
+        .style("pointer-events", "none")
+        .text(function(d,i){return d.w});
+	}
+
+force.on('end', function() {
+
+    // When this function executes, the force layout
+    // calculations have concluded. The layout will
+    // have set various properties in our nodes and
+    // links objects that we can use to position them
+    // within the SVG container.
+
+    // First let's reposition the nodes. As the force
+    // layout runs it updates the `x` and `y` properties
+    // that define where the node should be centered.
+    // To move the node, we set the appropriate SVG
+    // attributes to their new values. We also have to
+    // give the node a non-zero radius so that it's visible
+    // in the container.
+
+    d3.selectAll("circle").attr("r",width/30).attr("cx", function (d) {
+        return d.x;
+    })
+        .attr("cy", function (d) {
+        return d.y;
+    });
+
+    // We also need to update positions of the links.
+    // For those elements, the force layout sets the
+    // `source` and `target` properties, specifying
+    // `x` and `y` values in each case.
+
+    /*link.attr('x1', function(d) { return d.source.x; })
+        .attr('y1', function(d) { return d.source.y; })
+        .attr('x2', function(d) { return d.target.x; })
+        .attr('y2', function(d) { return d.target.y; });*/
+     link.attr('d',function(d){return 'M '+d.source.x+' '+d.source.y+' L '+ d.target.x +' '+d.target.y})
+     .attr('marker-end', 'url(#end)');
+        //update();
+});
+function tick() {
+  /*link.attr("x1", function(d) { return d.source.x; })
+      .attr("y1", function(d) { return d.source.y; })
+      .attr("x2", function(d) { return d.target.x; })
+      .attr("y2", function(d) { return d.target.y; });*/
+      link.attr('d',function(d){return 'M '+d.source.x+' '+d.source.y+' L '+ d.target.x +' '+d.target.y});
+
+
+  d3.selectAll("circle").attr("cx", function (d) {
+        return d.x;
+    })
+        .attr("cy", function (d) {
+        return d.y;
+    });
+    d3.selectAll("text").attr("x", function (d) {
+        return d.x;
+    })
+        .attr("y", function (d) {
+        return d.y;
+    });
+}
+		force.start();
+		function doBFS(){
+      //g.generateAdjacency();
+  g.generateAdjacency();
+  sort(g.nodes);
+  dijkstra(graph,graph.nodes[1]);
+  init();
+  //console.log(graph);
+  //console.log(anim);
+  g.animation.startAnimation(update,1000);
+  update();
+}
+    </script>
+    </body>
+</html>

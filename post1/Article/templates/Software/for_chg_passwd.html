@@ -1,0 +1,38 @@
+<html>
+<head>
+	<title>Change Password</title>
+</head>
+<body>
+	<div>
+		<form action="/forgot_chg_passwd/" method="post">
+			<table>
+			<tr>
+				<td>
+					<label>New Password:</label>
+				</td>
+				<td>
+					<input type="password" required="required" name="for_new_password"></input>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label>Confirm Password:</label>
+				</td>
+				<td>
+					<input type="password" required="required" name="for_conf_password"></input>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<input type="submit" value="CHANGE PASSWORD" name="submit"></input>
+				</td>
+			</tr>
+			</table>
+		</form>	
+		{% if error %}
+			<div name="error">{{error}}</div>
+		{% endif %}
+		<br>
+	</div>
+</body>
+</html>

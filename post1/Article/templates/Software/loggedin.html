@@ -1,0 +1,32 @@
+<html>
+
+<body>
+<head>
+<title>Logged In</title>
+{% load staticfiles %}
+<link type="text/css"
+      rel="stylesheet"
+      href="{% static 'mysite/stylesheet1.css'%}">
+</head>
+<link type="text/css";
+      rel="stylesheet";
+      href="stylesheet2.css";/>
+<h1>
+Welcome  {{uname}}
+</h1>
+<br></br>
+{% ifequal count  1 %}
+
+  You have logged in {{logincount}} time
+
+{% else %}
+
+  You have logged in {{logincount}} times
+{% endifequal %}
+<div>
+<form action="/logout/" method="post">
+  {% csrf_token %}
+<input type="submit" value="Logout">
+</form>
+</div>
+</body>

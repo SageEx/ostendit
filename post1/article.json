@@ -1,0 +1,58 @@
+[
+{
+    "fields": {
+        "user_permission": 2,
+        "photo": "himanshu.jpeg",
+        "user_password": "shubham",
+        "user_college": "s",
+        "posts": 10,
+        "security_answer": "yes",
+        "security_question": 0,
+        "user_name": "shubham",
+        "user_email": "shubham"
+    },
+    "model": "Article.myuser",
+    "pk": 1
+},
+{
+    "fields": {
+        "user_permission": 0,
+        "photo": "himanshu.jpeg",
+        "user_password": "aditya",
+        "user_college": "s",
+        "posts": 10,
+        "security_answer": "yes",
+        "security_question": 0,
+        "user_name": "aditya",
+        "user_email": "shubham.ee13@iitp.ac.in"
+    },
+    "model": "Article.myuser",
+    "pk": 2
+},
+{
+    "fields": {
+        "body": "sdsd\r\nsds\r\n\r\n\r\nsdsd\r\n\r\nsdsd\r\n\r\n\r\n\r\n\r\nsdsd",
+        "author": "aditya",
+        "doc": "",
+        "title": "Aditya",
+        "tag": "shubham anwesha meeting chutiya",
+        "likes": 0,
+        "key": true
+    },
+    "model": "Article.article",
+    "pk": 9
+},
+{
+    "fields": {
+        "body": "alksas\r\nas\r\nas\r\nas\r\n",
+        "author": "aditya",
+        "doc": "",
+        "title": "SHUBHAM",
+        "tag": "dp,simulation,hardcord,abc",
+        "likes": 0,
+        "key": false
+    },
+    "model": "Article.article",
+    "pk": 10
+}
+]

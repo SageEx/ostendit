@@ -1,0 +1,20 @@
+{% extends "Software/header.html" %}
+
+{% block slidebar %}
+<ul>
+	<li><a href="/articles/all">Cancel</a></li>
+</ul>
+{% endblock %}
+
+{% block content %}
+<form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+	<ul>
+		Title<br><br><input type="text" placeholder="Title" width="50px" required="required" name="title"></input><br><br>
+		Post<br><br><textarea  name="post" placeholder="Write a Post" rows="8" cols="60" required="required"></textarea><br><br>	
+		Tag<br><br><input type="text" placeholder="Tag" width="50px" name="tag"></input><br><br>
+		Upload a File<br><br><input type="file" width="50px" name="file"></input><br><br>
+	</ul>
+	<input type="submit" name="submit" value="CREATE ARTICLE">
+</form>
+
+{% endblock %}
