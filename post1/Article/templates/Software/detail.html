@@ -1,0 +1,50 @@
+<!Document Html>
+<html lang="en">
+<head>
+
+<title> Login Portal </title>
+</head>
+{% load staticfiles %}
+<link type="text/css"
+      rel="stylesheet"
+      href="{% static 'mysite/stylesheet1.css'%}">
+<body>
+
+<h1>{{ error_message }}</h1>
+
+
+<br/>
+<div>
+<form action="/perform/" method="post">
+  
+Username : <input type="text" name="uname" /><br/><br/>
+Password : <input type="password" name="passwd"/><br/><br/>
+<input type="submit" value="LOGIN" name="Login" id="submit">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="submit" value="Add User" name="Add User" id="submit">
+
+</form>
+</div>
+
+
+</body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</html>

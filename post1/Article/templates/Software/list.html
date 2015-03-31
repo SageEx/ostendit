@@ -1,0 +1,48 @@
+<html>
+<head>
+</head>
+<body>
+<a href="/create/">Create a Article</a>
+<a href="/articles/all/">Articles</a>
+<a href="/admin/">Admin</a>
+{% block content %}
+    <div id="main">
+        <!-- Posts  -->
+        <ul>
+	<a href>Read More</a>
+            {% for post in posts.object_list %}
+                <script>					
+			var i = ++i || 1 ;
+			document.write('<div id="title">{{ post.title }}</div>');
+               		document.write('<ul>');
+                   	document.write('<div id="time">{{ post.created }}</div>');
+                    	document.write('<div id="body">{{ post.body|linebreaks }}</div>');
+		    	str1 = '<a href = /load/' ;
+			str1 = str1.concat(i) ;
+			str2 = '/>Read More</a>' ;
+			str2 = str1.concat(str2) ;	
+			document.write(str2) ;	
+                	document.write('</ul>') ;
+		</script>
+            {% endfor %}
+        </ul>
+	<!-- For the paginator -->
+	    {% if posts.object_list and posts.paginator.num_pages > 1 %}
+		<div id = "pagination" style = "margin-top : 20px ; margin-left : -20px; ">
+			<span id="step-links">
+				{% if posts.has_previous %}
+					<a href="/page={{posts.previous_page_number}}/pages/">newer enteries &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a>
+				{% endif %}	
+				<span id="current">
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Page{{posts.number}} of {{posts.paginator.num_pages}}
+				</span>	 
+				{% if posts.has_next %}
+					<a href="/page={{posts.next_page_number}}/pages/">Older entry</a>			
+				{% endif %}
+			</span>					
+		</div>
+	    {% endif %}	
+    </div>
+{% endblock %}
+</body>
+</html>

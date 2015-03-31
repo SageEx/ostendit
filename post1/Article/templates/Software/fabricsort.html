@@ -1,0 +1,447 @@
+<html>
+	<head>
+	<script src="../../static/frontend/js/fabric.min.js"></script>
+	<meta charset="utf-8"> 
+	<title>Fabric Sort</title>
+	<link rel="stylesheet" href="../../static/frontend/bootstrap/css/bootstrap.css">
+	</head>
+	<body>
+		<div class="container" style="margin-left: 1px;width: 55%;margin-top: 5px;">
+		<form role="form">
+		<div class="form-group">
+		<label for="inputstr">Enter the Elements :</label>
+		<input type="text" class="form-control" id="inputstr">
+		</div>
+		</form>
+		</div>
+		<button type="button" class="btn btn-primary" id="rendbtn" onclick="rend()" style="margin-left: 18px;margin-top: 2px">Render</button>
+		<br>
+		<div class="input-group" style="margin-left: 18px;margin-top: 5px;">
+		<span class="input-group-btn">
+		<button type="button" class="btn btn-primary" id="startbtn" onclick="start()">Start</button>
+		<button type="button" class="btn btn-primary" id="stepbtn" onclick="step()">Step</button>
+		</span>
+		<div class="col-sm-1">
+		<input type="text" id="inputstr2" class="form-control" style="margin-left: 5px;">
+		</div>
+		
+		<button type="button" class="btn btn-primary" id="prevbtn" onclick="prev()"><-</button>
+		<button type="button" class="btn btn-primary" id="nextbtn" onclick="next()">-></button>
+		
+		</div>
+		<canvas height="700" width="2000" id="myCanvas" style="margin-top: 5px">
+		</canvas>
+		
+		<script>
+				document.getElementById("rendbtn").disabled=false;
+				document.getElementById("startbtn").disabled=true;
+				document.getElementById("nextbtn").disabled=true;
+				document.getElementById("prevbtn").disabled=true;
+				document.getElementById("stepbtn").disabled=true;
+				//document.getElementById("inputstr2").disabled=false;
+				document.getElementById("inputstr").value="";
+				document.getElementById("inputstr2").value="";
+				var canvas = new fabric.Canvas('myCanvas');
+				var ci = -1;
+				var Y = 50;
+				var maxHeight = 400;
+				var numRect = 10;
+				var totalWidth = 900;
+				//var widthr = totalWidth/numRect;
+				var values=[];
+				var valuest=[];
+				var valuesback=[];
+				var anim = [];
+				var heights = [];
+				var names = [];
+				function rend(){
+				document.getElementById("rendbtn").disabled = true;
+				document.getElementById("startbtn").disabled=false;
+				document.getElementById("nextbtn").disabled=false;
+				document.getElementById("prevbtn").disabled=false;
+				document.getElementById("stepbtn").disabled=false;
+				var inp = document.getElementById('inputstr').value;
+				var arrtemp = inp.split(' ');		
+				names = arrtemp.slice();
+				var arrinp=[];
+				for(var a=0;a<arrtemp.length;a++){
+					var ini={'cost': arrtemp[a]*(-1),'stindex': a};
+					arrinp.push(ini);
+				}
+		        
+				var quick = arrinp.slice();
+				var len = quick.length;
+				quicksort(0,len-1,quick);
+				console.log("anim length : "+anim.length);
+				for(var a=0;a<arrinp.length;a++){
+					arrinp[quick[a].stindex].cost = 18*(a+1)*(-1);
+				}
+				
+				
+		        //canvas.add(new fabric.Circle({ radius: 30, fill: '#f55', top: 100, left: 100 }));
+		        //canvas.selectionColor = 'rgba(0,255,0,0.3)';
+		        //canvas.selectionBorderColor = 'red';
+		        //canvas.selectionLineWidth = 5
+				function makeLine(coords) {
+			    return new fabric.Line(coords, {
+			      fill: 'red',
+			      stroke: 'red',
+			      strokeWidth: 2,
+			      selectable: false
+			    });
+  			}
+  			var axes = new fabric.Path('M 1250 0 L 0 0 L 0 -400 ');
+  			axes.set({ fill: 'white', stroke: 'black', opacity: 0.9,strokeWidth: 2, selectable: false });
+  			axes.set({ left: 50, top: 50 });
+  			canvas.add(axes);
+  			// our values
+  			
+  			var i = 0;
+  			for(;i < arrinp.length;i++) {
+				heights.push(arrinp[i].cost);
+				//var inte = parseInt(arrinp[i]);
+  				var rect = new fabric.Rect({
+  					left: i*50+55,
+  					top: Y+400,
+  					fill:'red',
+  					width: 40,
+  					strokeWidth: 2,
+  					height: arrinp[i].cost,
+					
+					//hoverCursor: 'Red',
+					selectable: false
+					
+  				});
+				//var str1 = ''+rect.height;
+				//var str = str1.slice(1);
+				//console.log(str);
+				var text = new fabric.Text(''+arrtemp[i],{
+					left: i*50+45,
+  					top: Y+409+(arrtemp[i].length-1)*6,
+  					fill:'blue',
+					fontSize: '16',
+					fontFamily: 'Delicious',
+					angle : '315',
+					selectable: false
+				});
+  				values.push(rect);
+				valuest.push(text);
+  			}
+			var k = 0;
+  			while ( k<values.length ) {
+  				//console.log(values.shift());
+  				canvas.add(values[k]);
+				canvas.add(valuest[k]);
+				k++;
+  			}
+			var i,j;
+			
+			valuesback = values.slice();
+			/*for(i=0;i<values.length;i++){
+				for(j=i+1;j<values.length;j++){
+					if(values[i].height<values[j].height){
+						//swap(i,j);
+						anim.push({'a':i,'b':j});
+						var temp1 = values[i];
+						values[i] = values[j];
+						values[j] = temp1;
+						//console.log(i+' '+j);
+					}
+				}
+			}*/
+			var j ;
+			
+	//Insertion Sort		
+	/*for(j=1;j<values.length;j++){
+		var key = values[j].height;
+		var i = j - 1;
+		var temp = values[j];
+		while((i>-1)&&(values[i].height<key)){
+			values[i+1] = values[i];
+			anim.push({'a':i+1,'b':i});
+			console.log(i+' '+(i+1));
+			i--;
+		}
+		values[i+1] = temp;
+	}
+	*/
+	//Bubble Sort
+	/*for(i=values.length-1;i>0;i--){
+		for(j=0;j<i;j++){
+			if(values[j].height<values[j+1].height){
+				var temp3 = values[j];
+				values[j] = values[j+1];
+				values[j+1]=temp3;
+				anim.push({'a':j+1,'b':j});
+				console.log(j+' '+(j+1));
+			}
+		}
+	}*/
+	//Selection Sort
+	/*for(i=0;i<values.length-1;i++){
+		var temp4 = -1000000,small=i;
+		for(j=i;j<values.length;j++){
+			if(values[j].height>temp4){
+				temp4 = values[j].height;
+				small = j;
+			}
+		}
+		anim.push({'a':small,'b':i});
+		var temp5 = values[i];
+		values[i] = values[small];
+		values[small]=temp5;
+	}*/
+	//Quick Sort
+	}
+	
+		function quicksort(lowIndex,highIndex,quick){
+		if(lowIndex<highIndex){
+		var l = lowIndex-1;
+		var h;
+		for(h=lowIndex;h<=highIndex-1;h++){
+			if(quick[h].cost>quick[highIndex].cost){
+				l++;
+				//console.log('Here');
+				if(l!=h){
+					anim.push({'a':h,'b':l,'c':highIndex, 'd':1,'e':highIndex});
+					console.log(h+' '+l);
+					var temp6 = quick[l];
+					quick[l]=quick[h];
+					quick[h]=temp6;
+				}
+			}
+				anim.push({'a':h,'b':l,'c':lowIndex, 'd':2,'e':highIndex});
+		}
+		anim.push({'a':highIndex,'b':l+1,'c':highIndex, 'd':3,'e':highIndex});
+		//console.log(highIndex+' '+(l+1));
+		//quick[highIndex].set('height',23*(l+2)*(-1));
+		var temp6 = quick[l+1];
+		quick[l+1]=quick[highIndex];
+		quick[highIndex]=temp6;
+		quicksort(lowIndex,l,quick);
+		quicksort(l+2,highIndex,quick);
+		}
+		
+	}
+	
+		function duringQuick(i,j,k,l){
+			for(var a=i+1;a<=j;a++){
+				valuesback[a].set('fill','grey');
+			}
+			for(var a=k;a<=i;a++){
+				valuesback[a].set('fill','black');
+			}
+			valuesback[l].set('fill','blue');
+			for(var a=0;a<k;a++){
+				valuesback[a].setOpacity(0.25);
+			}
+			
+			for(var a=l+1;a<valuesback.length;a++){
+				valuesback[a].setOpacity(0.25);
+			}
+		}
+			var canAnimate = 1;
+			function swap(i,j,k,l){
+				//if(i==j){
+					//valuesback[i].set('fill','green');
+				//}
+				//else{
+				valuesback[i].setOpacity(1);
+				valuesback[j].setOpacity(1);
+				var temp1 = valuesback[i];
+				var temp2 = valuesback[j];
+				var ttemp1 = valuest[i];
+				var ttemp2 = valuest[j];
+				if(i!=k){
+				var temp3 = valuesback[k];
+				temp3.set('fill','blue');
+				}
+				var x1 = temp1.left;
+				var x2 = temp2.left;
+				//temp1.left = x2;
+				//console.log(x1);
+				//temp2.left = x1;
+				valuesback[i] = temp2;
+				valuesback[j] = temp1;
+				valuest[i] = ttemp2;
+				valuest[j] = ttemp1;
+				//console.log(x2);
+				//value[i] = temp2;
+				//value[j] = temp1;
+				//temp1.animate('height', x2, { onChange: canvas.renderAll.bind(canvas) });
+				//temp1.set('fill','blue');
+				//temp2.set('fill','blue');
+				temp1.animate('left', x2 , {
+ 					 onChange: canvas.renderAll.bind(canvas),
+  					 duration: 1000,
+  					 onComplete: function(){
+						temp1.set('fill','red');
+  					 },
+  					 //easing: fabric.util.ease.easeOutBounce
+				});
+				//temp2.animate('height', x1 ,{ onChange: canvas.renderAll.bind(canvas) } );
+				temp2.animate('left', x1 , {
+ 					 onChange: canvas.renderAll.bind(canvas),
+  					 duration: 1000,
+  					 onComplete: function(){
+						temp2.set('fill','red');	
+  					 },
+  					 //easing: fabric.util.ease.easeOutBounce
+				});
+				ttemp1.animate('left', x2-10 , {
+ 					 onChange: canvas.renderAll.bind(canvas),
+  					 duration: 1000
+  					 
+  					 //easing: fabric.util.ease.easeOutBounce
+				});
+				//temp2.animate('height', x1 ,{ onChange: canvas.renderAll.bind(canvas) } );
+				ttemp2.animate('left', x1-10 , {
+ 					 onChange: canvas.renderAll.bind(canvas),
+  					 duration: 1000
+  					 
+				});
+				
+				if(l==3){
+					for(var a=0;a<valuesback.length;a++){
+						valuesback[a].set('fill','red');
+						valuesback[a].setOpacity(1);
+					}
+				}
+				
+				}
+			//}
+			
+			function doAnimate(animation) {
+				if ( animation.length > 0 ) {
+					//console.log(animation[0].a+' '+animation[0].b);
+					
+					if(animation[0].d == 2){
+						duringQuick(animation[0].b, animation[0].a, animation[0].c, animation[0].e);
+					}
+					else{
+					swap( animation[0].a, animation[0].b, animation[0].c, animation[0].d);
+					}
+					animation.shift();
+					
+					return 1;
+				} else {
+					for(var a=0;a<valuesback.length;a++){
+						valuesback[a].set('fill','green');
+						}
+					return 0;
+				}
+				/*for(var a=0;a<valuesback.length;a++){
+					valuesback[a].set('fill','green');
+				}*/
+				//valuesback[valuesback.length-1].set('fill','green');
+			}
+			function start() {
+				document.getElementById("startbtn").disabled  = true;
+				document.getElementById("startbtn").disabled = true;
+				document.getElementById("stepbtn").disabled = true;
+				document.getElementById("nextbtn").disabled = true;
+				document.getElementById("prevbtn").disabled = true;
+				var t = setInterval( function(){
+				canAnimate = doAnimate( anim );
+				
+				if( canAnimate === 0 ) {
+					clearInterval(t);
+				}
+				canvas.renderAll();
+			}, 1300 );
+			}
+			
+			function step(){
+				//var animat = anim.slice();
+				//var animation = anim.slice();
+				//var valna = valuesback.slice();
+				//var valnat = valuest.slice();
+				console.log(names);
+				console.log(heights);
+				var dupnames = names.slice();
+				var dupheights = heights.slice();
+				var z=0;
+				
+				for(z=0;z<valuesback.length;z++){
+					valuesback[z].set('fill','red');
+					valuesback[z].setOpacity(1.0);
+				}
+				
+				var inp1 = document.getElementById("inputstr2").value;
+				console.log(inp1);
+				if(inp1<=anim.length-1 && inp1>=0){
+				
+				for(z=0;z<=inp1;z++){
+					console.log("loop start")
+					if(anim[z].d!=2){
+						var temp1 = dupheights[anim[z].a];
+						var temp2 = dupheights[anim[z].b];
+						dupheights[anim[z].a] = temp2;
+						dupheights[anim[z].b] = temp1;
+						//valuesback[anim[z].a].set('height',temp2);
+						console.log("Here");
+						var ttemp1 = dupnames[anim[z].a];
+						var ttemp2 = dupnames[anim[z].b];
+						dupnames[anim[z].a] = ttemp2;
+						dupnames[anim[z].b] = ttemp1;
+						
+					}
+					}
+				
+				
+				 for(z=0;z<valuesback.length;z++){
+					valuesback[z].animate('height', dupheights[z] , {
+ 					 onChange: canvas.renderAll.bind(canvas),
+  					 duration: 800,
+  					 onComplete: function(){
+						//temp1.set('fill','red');
+						//valuest[z].setText(dupnames[z]);
+  					 },
+  					 //easing: fabric.util.ease.easeOutBounce
+				});
+					valuest[z].setText(dupnames[z]);
+					valuest[z].set('top',Y+409+(dupnames[z].length-1)*6);
+				 }
+				 
+				 if(anim[inp1].d==2){
+					duringQuick(anim[inp1].b, anim[inp1].a, anim[inp1].c, anim[inp1].e);
+				 }
+				 else if(inp1==(anim.length-1)){
+					for(z=0;z<valuesback.length;z++){
+					valuesback[z].set('fill','green');
+  				}
+				 }
+				}
+				else if(inp1>=anim.length){
+					alert("Maximum Steps : "+(anim.length-1));
+				}
+				else if(inp1<0){
+					alert("Negative State Not Possible");
+				}
+					document.getElementById("startbtn").disabled = true;
+				}
+			
+				function next(){
+					var inp2 = document.getElementById("inputstr2").value;
+					var tmp = parseInt(inp2);
+					tmp = tmp + 1;
+					if(inp2<anim.length && inp2>=0){
+					document.getElementById("inputstr2").value = tmp;
+					step();
+					}
+				}
+				function prev(){
+					var inp2 = document.getElementById("inputstr2").value;
+					inp2-=1;
+					if(inp2<anim.length && inp2>=0){
+					document.getElementById("inputstr2").value = inp2;
+					step();
+					}
+				}
+			
+			canvas.renderAll();
+  			//canvas.add(values);
+  			//canvas.renderAll();
+		</script>
+	</body>
+</html>

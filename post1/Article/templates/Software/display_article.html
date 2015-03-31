@@ -1,0 +1,57 @@
+{% extends "Software/base.html" %}
+
+{% block content %}
+
+	{% if post.key %}
+	<ul>
+		<div class="title">{{ post.title }}</div>
+                <ul>
+                    <div class="time">{{ post.created }}</div>
+                    {% if key %}
+                    	<form action="/load/{{post.id}}/" method="post">
+                    		<textarea id = "pst" name="edit_post" rows="8" cols="60">{{post.body}}</textarea>
+                    		<input type="submit" name="submit" value="SAVE">
+                    	</form>
+                    {% else %}
+                    	<div class="body">{{ post.body|linebreaks }}</div>
+                    {% endif %}
+                    <div class="author">{{ post.author}}</div>
+                    <div class="like">{{post.likes}}</div>	
+					<p>
+						{% if post.doc %}
+							<div class="doc">
+								<a href="{{ post.doc.url}}">
+									{{ post.doc.name}}
+								</a>
+							</div>
+						{% endif %}
+					</p>
+		    <h3>Welcome to new world..</h3>	
+                </ul>	
+		<form action="" method="post">{% csrf_token %}
+			<input type = "submit" name = "like" value = "LIKE" id="id_like">
+		</form>
+		{% if key1 %}
+			<form action="" method="post">{% csrf_token %}
+				<input type="submit" name = "delete" value="DELETE" id="delete" >
+			</form>
+			<form action="" method="post">{% csrf_token %}
+				<input type="submit" name = "edit" value="EDIT" id="edit" >
+			</form>
+		{% endif %}
+		<form action="" method="post">{% csrf_token %}
+			<ul>
+				{{form.as_p}}
+			</ul>
+			<input type="submit" name = "comments" value="ADD Comment" id="id_comment" >
+		</form>
+		{% for comment in comments %}
+			<ul>				
+				<div class="comments">{{comment.comment}}</div>
+			</ul>
+		{% endfor %}
+	</ul>
+	{% else %}
+		<div>This article is deleted by the author</div>
+	{% endif %}
+{% endblock %}
